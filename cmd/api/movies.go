@@ -16,10 +16,10 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	// of the Movie struct that we created earlier). This struct will be our *target
 	// decode destination*.
 	var input struct {
-		Title   string   `json:"title"`
-		Year    int32    `json:"year"`
-		Runtime int32    `json:"runtime"`
-		Genres  []string `json:"genres"`
+		Title   string       `json:"title"`
+		Year    int32        `json:"year"`
+		Runtime data.Runtime `json:"runtime"`
+		Genres  []string     `json:"genres"`
 	}
 	// Use the new readJSON() helper to decode the request body into the input struct.
 	// If this returns an error we send the client the error message along with a 400
@@ -31,7 +31,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Dump the contents of the input struct in a HTTP response.
-	fmt.Fprintf(w, "%+v\n", input)
+	fmt.Fprintf(w, "\n%+v\n", input)
 }
 
 // Add a showMovieHandler for the "GET /v1/movies/:id" endpoint. For now, we retrieve
