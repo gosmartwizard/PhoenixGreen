@@ -13,6 +13,7 @@ import (
 	// Import the pq driver so that it can register itself with the database/sql
 	// package. Note that we alias this import to the blank identifier, to stop the Go
 	// compiler complaining that the package isn't being used.
+	"github.com/gosmartwizard/PhoenixGreens/internal/data"
 	_ "github.com/lib/pq"
 )
 
@@ -39,9 +40,11 @@ type config struct {
 // Define an application struct to hold the dependencies for our HTTP handlers, helpers,
 // and middleware. At the moment this only contains a copy of the config struct and a
 // logger, but it will grow to include a lot more as our build progresses.
+// Add a models field to hold our new Models struct.
 type application struct {
 	config config
 	logger *log.Logger
+	models data.Models
 }
 
 func main() {
@@ -87,9 +90,12 @@ func main() {
 
 	// Declare an instance of the application struct, containing the config struct and
 	// the logger.
+	// Use the data.NewModels() function to initialize a Models struct, passing in the
+	// connection pool as a parameter.
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 
 	// Use the httprouter instance returned by app.routes() as the server handler.
