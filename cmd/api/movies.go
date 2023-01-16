@@ -1,9 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gosmartwizard/PhoenixGreens/internal/data"
 	"github.com/gosmartwizard/PhoenixGreens/internal/validator"
@@ -64,7 +64,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	// interpolating the system-generated ID for our new movie in the URL.
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/movies/%d", movie.ID))
-	
+
 	// Write a JSON response with a 201 Created status code, the movie data in the
 	// response body, and the Location header.
 	err = app.writeJSON(w, http.StatusCreated, envelope{"movie": movie}, headers)
@@ -84,24 +84,21 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Create a new instance of the Movie struct, containing the ID we extracted from
-	// the URL and some dummy data. Also notice that we deliberately haven't set a
-	// value for the Year field.
-	movie := data.Movie{
-		ID:        id,
-		CreatedAt: time.Now(),
-		Title:     "Raktha Sambhandam",
-		Year:      2022,
-		Runtime:   180,
-		Genres:    []string{"family", "drama", "romance", "war"},
-		Version:   1,
+	// Call the Get() method to fetch the data for a specific movie. We also need to
+	// use the errors.Is() function to check if it returns a data.ErrRecordNotFound
+	// error, in which case we send a 404 Not Found response to the client.
+	movie, err := app.models.Movies.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
 	}
 
-	// Create an envelope{"movie": movie} instance and pass it to writeJSON(), instead
-	// of passing the plain movie struct.
-	// Encode the struct to JSON and send it as the HTTP response.
 	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
-
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
