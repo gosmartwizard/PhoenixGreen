@@ -6,3 +6,6 @@ github.com/julienschmidt/httprouter
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# golang.org/x/time v0.3.0
+## explicit
+golang.org/x/time/rate
