@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"fmt"
-	"net/http"
 	"os"
 	"time"
 
@@ -117,26 +115,11 @@ func main() {
 		models: data.NewModels(db),
 	}
 
-	// Use the httprouter instance returned by app.routes() as the server handler.
-	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      app.routes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+	// Call app.serve() to start the server.
+	err = app.serve()
+	if err != nil {
+		logger.PrintFatal(err, nil)
 	}
-
-	// Again, we use the PrintInfo() method to write a "starting server" message at the
-	// INFO level. But this time we pass a map containing additional properties (the
-	// operating environment and server address) as the final parameter.
-	logger.PrintInfo("starting server", map[string]string{
-		"addr": srv.Addr,
-		"env":  cfg.env,
-	})
-
-	err = srv.ListenAndServe()
-
-	logger.PrintFatal(err, nil)
 }
 
 // The openDB() function returns a sql.DB connection pool.
