@@ -1,9 +1,13 @@
 package data
 
 import (
+	"context"
+	"database/sql"
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"time"
+
+	"github.com/gosmartwizard/PhoenixGreens/internal/validator"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Define a User struct to represent an individual user. Importantly, notice how we are
