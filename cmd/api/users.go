@@ -45,6 +45,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
+
 	// Insert the user data into the database.
 	err = app.models.Users.Insert(user)
 	if err != nil {
@@ -58,6 +59,14 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
+		return
+	}
+
+	// Call the Send() method on our Mailer, passing in the user's email address,
+	// name of the template file, and the User struct containing the new user's data.
+	err = app.mailer.Send(user.Email, "user_welcome.tmpl", user)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
 		return
 	}
 
