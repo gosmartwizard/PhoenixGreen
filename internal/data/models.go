@@ -15,17 +15,19 @@ var (
 // Create a Models struct which wraps the MovieModel. We'll add other models to this,
 // like a UserModel and PermissionModel, as our build progresses.
 type Models struct {
-	Movies MovieModel
-	Tokens TokenModel // Add a new Tokens field.
-	Users  UserModel  // Add a new Users field.
+	Movies      MovieModel
+	Permissions PermissionModel // Add a new Permissions field.
+	Tokens      TokenModel      // Add a new Tokens field.
+	Users       UserModel       // Add a new Users field.
 }
 
 // For ease of use, we also add a New() method which returns a Models struct containing
 // the initialized MovieModel.
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Movies: MovieModel{DB: db},
-		Tokens: TokenModel{DB: db}, // Initialize a new TokenModel instance.
-		Users:  UserModel{DB: db},
+		Movies:      MovieModel{DB: db},
+		Permissions: PermissionModel{DB: db}, // Initialize a new PermissionModel instance.
+		Tokens:      TokenModel{DB: db},      // Initialize a new TokenModel instance.
+		Users:       UserModel{DB: db},
 	}
 }
